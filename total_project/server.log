@@ -1,0 +1,103 @@
+
+> amazon-analyst@2.5.1 dev /home/hudi_data/total_project
+> cross-env NODE_NO_WARNINGS=1 next dev --turbopack
+
+   ▲ Next.js 15.2.3 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://10.0.21.35:3000
+   - Environments: .env.local, .env.development, .env
+   - Experiments (use with caution):
+     · turbo
+
+ ✓ Starting...
+ ⚠ Invalid next.config.mjs options detected: 
+ ⚠     Unrecognized key(s) in object: 'turbopack'
+ ⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+ ✓ Compiled in 673ms
+ ✓ Ready in 2.1s
+ ○ Compiling /[locale] ...
+ ✓ Compiled /[locale] in 10s
+ HEAD / 200 in 12139ms
+ GET / 200 in 367ms
+ ○ Compiling /[locale]/inventory ...
+ ✓ Compiled /[locale]/inventory in 6.3s
+ GET /api/auth/session 200 in 5713ms
+ GET /inventory 200 in 7715ms
+ GET /api/auth/session 200 in 81ms
+ GET /api/auth/session 200 in 74ms
+ GET /api/auth/session 200 in 84ms
+ GET /api/auth/session 200 in 81ms
+ ○ Compiling /api/inventory/stats ...
+ GET /api/auth/session 200 in 90ms
+ ✓ Compiled /api/inventory/stats in 959ms
+Ignoring invalid configuration option passed to Connection: acquireTimeout. This is currently a warning, but in future versions of MySQL2, an error will be thrown if you pass an invalid configuration option to a Connection
+Ignoring invalid configuration option passed to Connection: timeout. This is currently a warning, but in future versions of MySQL2, an error will be thrown if you pass an invalid configuration option to a Connection
+Ignoring invalid configuration option passed to Connection: reconnect. This is currently a warning, but in future versions of MySQL2, an error will be thrown if you pass an invalid configuration option to a Connection
+MySQL连接池初始化成功
+ GET /api/inventory/stats 200 in 1134ms
+ GET /api/auth/session 200 in 173ms
+ ○ Compiling /api/inventory/sales-persons ...
+ GET /api/inventory/sales-persons 200 in 1738ms
+ ✓ Compiled /api/inventory/sales-persons in 1740ms
+ GET /api/inventory?page=1&limit=20&latest_only=true 200 in 1779ms
+ GET /api/inventory/warehouse-locations 200 in 1817ms
+ GET /api/inventory?page=1&limit=20&latest_only=true 200 in 31ms
+ GET /api/inventory?page=1&limit=20&latest_only=true&sales_person=%E7%BD%97%E7%A2%A7%E7%90%B4 200 in 36ms
+ GET /api/inventory?page=1&limit=20&latest_only=true&sales_person=%E7%BD%97%E7%A2%A7%E7%90%B4&warehouse_location=%E5%85%B6%E4%BB%96 200 in 59ms
+ GET /api/inventory?page=1&limit=20&latest_only=true&sales_person=%E7%BD%97%E7%A2%A7%E7%90%B4&warehouse_location=%E6%AC%A7%E7%9B%9F 200 in 47ms
+ GET /api/inventory?page=1&limit=20&latest_only=true&warehouse_location=%E6%AC%A7%E7%9B%9F 200 in 51ms
+ ✓ Compiled in 554ms
+ GET /api/inventory/sales-persons 200 in 138ms
+ GET /api/inventory/warehouse-locations 200 in 147ms
+ GET /api/inventory?page=1&limit=20&latest_only=true 200 in 156ms
+ GET /api/inventory?page=1&limit=20&latest_only=true 200 in 86ms
+ ✓ Compiled in 537ms
+ GET /api/inventory/sales-persons 200 in 120ms
+ GET /api/inventory?page=1&limit=20&latest_only=true 200 in 135ms
+ GET /api/inventory/warehouse-locations 200 in 138ms
+ GET /api/inventory?page=1&limit=20&latest_only=true 200 in 48ms
+ ✓ Compiled in 535ms
+ GET /api/inventory/sales-persons 200 in 102ms
+ GET /api/inventory/warehouse-locations 200 in 107ms
+ GET /api/inventory?page=1&limit=20&latest_only=true 200 in 112ms
+ GET /api/inventory?page=1&limit=20&latest_only=true 200 in 39ms
+ HEAD /inventory 200 in 1395ms
+ GET / 200 in 388ms
+ GET /inventory 200 in 314ms
+ GET /api/auth/session 200 in 122ms
+ GET /api/inventory/stats 200 in 124ms
+ GET /api/auth/session 200 in 128ms
+ GET /api/inventory/sales-persons 200 in 135ms
+Ignoring invalid configuration option passed to Connection: acquireTimeout. This is currently a warning, but in future versions of MySQL2, an error will be thrown if you pass an invalid configuration option to a Connection
+Ignoring invalid configuration option passed to Connection: timeout. This is currently a warning, but in future versions of MySQL2, an error will be thrown if you pass an invalid configuration option to a Connection
+Ignoring invalid configuration option passed to Connection: reconnect. This is currently a warning, but in future versions of MySQL2, an error will be thrown if you pass an invalid configuration option to a Connection
+MySQL连接池初始化成功
+ GET /api/inventory/warehouse-locations 200 in 339ms
+ GET /api/inventory?page=1&limit=20&latest_only=true 200 in 359ms
+ GET /api/auth/session 200 in 102ms
+ GET /api/inventory?page=1&limit=20&latest_only=true 200 in 68ms
+ GET /api/auth/session 200 in 52ms
+ GET /api/inventory?page=1&limit=20&date_from=2025-07-22 200 in 71ms
+ GET /api/inventory?page=1&limit=20&date_from=2025-07-23 200 in 41ms
+ GET /api/inventory?page=1&limit=20&date_from=2025-07-29 200 in 44ms
+ GET /api/inventory?page=1&limit=20&date_from=2025-07-30 200 in 56ms
+ GET /api/inventory?page=1&limit=20&date_from=2025-07-22 200 in 43ms
+ GET /api/inventory?page=1&limit=20&date_from=2025-07-22&date_to=2025-07-30 200 in 48ms
+ GET /api/inventory?page=1&limit=20&date_from=2025-07-22&date_to=2025-07-24 200 in 40ms
+ GET /api/inventory?page=1&limit=20&date_from=2025-07-22&date_to=2025-07-25 200 in 42ms
+ GET / 200 in 539ms
+ GET /inventory 200 in 294ms
+ GET /api/auth/session 200 in 103ms
+ GET /api/inventory/stats 200 in 52ms
+ GET /api/auth/session 200 in 53ms
+ GET /api/inventory/warehouse-locations 200 in 93ms
+ GET /api/inventory/sales-persons 200 in 107ms
+ GET /api/inventory?page=1&limit=20&latest_only=true 200 in 116ms
+ GET /api/inventory?page=1&limit=20&latest_only=true 200 in 47ms
+ GET /api/inventory?page=1&limit=20&date_from=2025-07-22 200 in 52ms
+ GET /api/inventory?page=1&limit=20&date_from=2025-07-22&date_to=2025-07-28 200 in 50ms
+ ✓ Compiled in 742ms
+ GET /inventory 200 in 733ms
+ GET /inventory 200 in 184ms
+ ✓ Compiled in 476ms
+ ✓ Compiled in 559ms
