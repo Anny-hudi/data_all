@@ -7,7 +7,7 @@ import { describe, test, expect, beforeEach } from '@jest/globals';
 import { testClient, testAdapter, TestDataGenerator, TestAssertions } from '../setup';
 import { AdDataDAO } from '../../src/lib/database/ad-data-dao';
 
-describe('广告分析数据同步测试', () => {
+describe('广告分析数据同步测试', () => {bru
   let adDataDAO: AdDataDAO;
 
   beforeEach(async () => {

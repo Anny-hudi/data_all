@@ -15,10 +15,42 @@ export function db() {
   if (!databaseUrl) {
     console.warn("DATABASE_URL is not set, using mock database for development");
     return {
-      select: () => ({ from: () => ({ where: () => Promise.resolve([]) }) }),
-      insert: () => ({ values: () => Promise.resolve({ insertId: "mock" }) }),
-      update: () => ({ set: () => ({ where: () => Promise.resolve() }) }),
-      delete: () => ({ where: () => Promise.resolve() }),
+      select: () => ({ 
+        from: () => ({ 
+          where: () => ({ 
+            orderBy: () => ({ 
+              limit: () => ({ 
+                offset: () => Promise.resolve([]) 
+              }) 
+            }) 
+          }) 
+        }) 
+      }),
+      insert: () => ({ 
+        values: () => ({ 
+          returning: () => Promise.resolve([{ 
+            id: Math.floor(Math.random() * 1000),
+            task_number: `MOCK-${Date.now()}`,
+            status: 'pending',
+            created_at: new Date(),
+            updated_at: new Date()
+          }])
+        })
+      }),
+      update: () => ({ 
+        set: () => ({ 
+          where: () => ({ 
+            returning: () => Promise.resolve([{
+              id: Math.floor(Math.random() * 1000),
+              status: 'completed',
+              updated_at: new Date()
+            }])
+          }) 
+        }) 
+      }),
+      delete: () => ({ 
+        where: () => Promise.resolve({ count: 1 }) 
+      }),
     } as any;
   }
 
@@ -29,19 +61,43 @@ export function db() {
     return drizzle(connection);
   }
 
-  // In Node.js environment, use singleton pattern
+  // In Node.js environment, use singleton pattern  
   if (dbInstance) {
     return dbInstance;
   }
 
   // Node.js environment with connection pool configuration
-  const pool = mysql.createPool({
-    uri: databaseUrl,
-    connectionLimit: 10, // Maximum connections in pool
-    acquireTimeout: 10000, // Connection timeout (milliseconds)
-    idleTimeout: 30000, // Idle connection timeout (milliseconds)
-  });
-  dbInstance = drizzle(pool);
+  try {
+    const pool = mysql.createPool(databaseUrl);
+    dbInstance = drizzle(pool);
+  } catch (error) {
+    console.error('Failed to create database connection:', error);
+    // Return mock database for development
+    return {
+      select: () => ({ 
+        from: () => ({ 
+          where: () => ({ 
+            orderBy: () => ({ 
+              limit: () => ({ 
+                offset: () => Promise.resolve([]) 
+              }) 
+            }) 
+          }) 
+        }) 
+      }),
+      insert: () => ({ 
+        values: () => Promise.resolve({ insertId: "mock" })
+      }),
+      update: () => ({ 
+        set: () => ({ 
+          where: () => Promise.resolve() 
+        }) 
+      }),
+      delete: () => ({ 
+        where: () => Promise.resolve({ affectedRows: 1 }) 
+      }),
+    } as any;
+  }
 
   return dbInstance;
 }

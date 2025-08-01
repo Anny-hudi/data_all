@@ -30,7 +30,8 @@
 - searchType: 搜索类型, 可选值:asin; msku; parentAsin; spu; sku（string）
 - searchMode: 搜索类型 精:exact 模:blur（string）
 - asinType: 数据聚合维度,默认1 (1:asin; 2:parentAsin; 3:msku; 4:sku; 5:spu)（string）
-- mergeAsin: 按ASIN汇总,默认false (true:是; false:否)（string）
+- mergeAsin: 按ASIN汇总,默认false (true
+:是; false:否)（string）
 - fullCid: 商品分类全路径（string）
 - labelQuery: 产品标签查询类型, 默认0 (0:任一;1:所有)（string）
 - labelIdList: 产品标签ID列表（array[string]）

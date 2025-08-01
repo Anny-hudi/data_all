@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI分析功能演示 - Amazon Analyst</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        border: "hsl(214.3 31.8% 91.4%)",
+                        background: "hsl(0 0% 100%)",
+                        foreground: "hsl(222.2 84% 4.9%)",
+                        muted: "hsl(210 40% 96%)",
+                        "muted-foreground": "hsl(215.4 16.3% 46.9%)",
+                        destructive: "hsl(0 84.2% 60.2%)",
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        .animate-bounce { animation: bounce 1s infinite; }
+        .animate-spin { animation: spin 1s linear infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+        @keyframes bounce { 0%, 100% { transform: translateY(-25%); animation-timing-function: cubic-bezier(0.8,0,1,1); } 50% { transform: none; animation-timing-function: cubic-bezier(0,0,0.2,1); } }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .streaming-cursor::after { content: ''; display: inline-block; width: 8px; height: 16px; background: #7c3aed; margin-left: 4px; animation: pulse 1s infinite; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto py-6 space-y-6 max-w-6xl">
+        <!-- 页面头部 -->
+        <div class="bg-white rounded-lg shadow-sm border p-6">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">🤖 AI运营决策分析演示</h1>
+                    <p class="text-sm text-gray-600 mt-1">
+                        ASIN: B07XAMPLE | 库存点: US-WEST
+                    </p>
+                </div>
+                <div class="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg text-sm font-medium">
+                    演示模式
+                </div>
+            </div>
+        </div>
+
+        <!-- 产品信息卡片 -->
+        <div class="bg-white rounded-lg shadow-sm border">
+            <div class="p-6 border-b">
+                <h2 class="text-lg font-semibold flex items-center gap-2">
+                    📦 产品基本信息
+                </h2>
+            </div>
+            <div class="p-6">
+                <!-- 产品基本信息 -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
+                    <div>
+                        <label class="text-sm font-medium text-gray-600">ASIN</label>
+                        <p class="font-mono text-lg font-bold">B07XAMPLE123</p>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-600">产品名称</label>
+                        <p class="text-lg">Amazon AI Analysis Demo Product</p>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-600">库存点</label>
+                        <p class="text-lg">US-WEST</p>
+                    </div>
+                </div>
+
+                <!-- 库存详情 -->
+                <div class="mb-6">
+                    <h4 class="text-lg font-semibold mb-3">库存数据</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="text-center p-4 bg-blue-50 rounded-lg border">
+                            <div class="text-2xl font-bold text-blue-600 mb-2">2,850</div>
+                            <p class="text-sm text-gray-600">总库存</p>
+                            <div class="flex items-center justify-center text-green-600 text-sm mt-2">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                +12.3%
+                            </div>
+                        </div>
+                        <div class="text-center p-4 bg-indigo-50 rounded-lg border">
+                            <div class="text-2xl font-bold text-indigo-600 mb-2">1,240</div>
+                            <p class="text-sm text-gray-600">FBA可用</p>
+                        </div>
+                        <div class="text-center p-4 bg-yellow-50 rounded-lg border">
+                            <div class="text-2xl font-bold text-yellow-600 mb-2">800</div>
+                            <p class="text-sm text-gray-600">FBA在途</p>
+                        </div>
+                        <div class="text-center p-4 bg-green-50 rounded-lg border">
+                            <div class="text-2xl font-bold text-green-600 mb-2">810</div>
+                            <p class="text-sm text-gray-600">本地仓</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 销售表现 -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-3">销售表现</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="text-center p-4 bg-green-50 rounded-lg border">
+                            <div class="text-2xl font-bold text-green-600 mb-2">$1,250</div>
+                            <p class="text-sm text-gray-600">日均销售额</p>
+                            <div class="flex items-center justify-center text-green-600 text-sm mt-2">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                +8.7%
+                            </div>
+                        </div>
+                        <div class="text-center p-4 bg-purple-50 rounded-lg border">
+                            <div class="text-2xl font-bold text-purple-600 mb-2">45</div>
+                            <p class="text-sm text-gray-600">平均销量</p>
+                            <div class="flex items-center justify-center text-red-600 text-sm mt-2">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                -2.1%
+                            </div>
+                        </div>
+                        <div class="text-center p-4 bg-orange-50 rounded-lg border">
+                            <div class="mb-2">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                                    库存充足
+                                </span>
+                            </div>
+                            <p class="text-sm text-gray-600">周转天数: 63 天</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI分析面板 -->
+        <div class="bg-white rounded-lg shadow-sm border" id="analysisPanel">
+            <div class="p-6 border-b">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-lg font-semibold flex items-center gap-2">
+                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                        🤖 AI运营决策分析
+                    </h2>
+                    <div class="flex items-center gap-2">
+                        <button id="startAnalysis" onclick="startAnalysis()" class="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg flex items-center gap-2 transition-all">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                            </svg>
+                            开始AI分析
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 进度条 -->
+                <div id="progressSection" class="hidden mt-4 space-y-2">
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="text-gray-600 flex items-center gap-2">
+                            <svg class="w-3 h-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                            AI正在分析中...
+                        </span>
+                        <span class="text-gray-600"><span id="progressPercent">0</span>%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div id="progressBar" class="bg-gradient-to-r from-purple-600 to-blue-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 分析内容区域 -->
+            <div id="analysisContent" class="p-6">
+                <!-- 空状态 -->
+                <div id="emptyState" class="text-center py-12 text-gray-500">
+                    <div class="w-16 h-16 mx-auto bg-gradient-to-br from-purple-100 to-blue-100 rounded-full flex items-center justify-center mb-4">
+                        <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-medium mb-2">AI运营决策分析</h3>
+                    <p class="text-sm mb-4">观看AI分析师的完整思考过程，实时了解分析逻辑和推理步骤，获取专业的运营建议</p>
+                    <div class="grid grid-cols-2 gap-4 max-w-md mx-auto text-xs">
+                        <div class="p-3 bg-purple-50 rounded-lg border">
+                            <div class="font-medium text-purple-900 mb-1 flex items-center gap-1">
+                                <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                </svg>
+                                思考过程
+                            </div>
+                            <div class="text-purple-700">实时展示AI思路</div>
+                        </div>
+                        <div class="p-3 bg-blue-50 rounded-lg border">
+                            <div class="font-medium text-blue-900 mb-1 flex items-center gap-1">
+                                <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                                分析步骤
+                            </div>
+                            <div class="text-blue-700">逐步深入分析</div>
+                        </div>
+                        <div class="p-3 bg-green-50 rounded-lg border">
+                            <div class="font-medium text-green-900 mb-1 flex items-center gap-1">
+                                <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
+                                </svg>
+                                行动建议
+                            </div>
+                            <div class="text-green-700">可执行的建议</div>
+                        </div>
+                        <div class="p-3 bg-yellow-50 rounded-lg border">
+                            <div class="font-medium text-yellow-900 mb-1 flex items-center gap-1">
+                                <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                </svg>
+                                实时反馈
+                            </div>
+                            <div class="text-yellow-700">即时查看结果</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 流式分析事件展示区域 -->
+                <div id="streamingEvents" class="hidden space-y-3">
+                    <!-- 事件会动态添加到这里 -->
+                </div>
+
+                <!-- 分析完成后的最终结果 -->
+                <div id="finalResult" class="hidden">
+                    <div class="border-t pt-4">
+                        <div class="flex items-center gap-2 mb-4">
+                            <svg class="h-5 w-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <h3 class="text-lg font-semibold text-green-800">分析完成</h3>
+                        </div>
+                        
+                        <div class="bg-gradient-to-br from-green-50 to-blue-50 border border-green-200 rounded-lg p-4">
+                            <div id="finalAnalysisContent" class="prose prose-sm max-w-none">
+                                <!-- 最终分析结果会显示在这里 -->
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center gap-2 mt-4 pt-3 border-t">
+                            <button onclick="copyAnalysis()" class="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+                                </svg>
+                                复制分析结果
+                            </button>
+                            
+                            <button onclick="resetAnalysis()" class="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                </svg>
+                                重新分析
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 分析历史记录 -->
+        <div class="bg-white rounded-lg shadow-sm border">
+            <div class="p-6 border-b">
+                <h2 class="text-lg font-semibold flex items-center gap-2">
+                    📚 分析历史记录
+                </h2>
+            </div>
+            <div class="p-6">
+                <div class="space-y-3">
+                    <div class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">已完成</span>
+                                <span class="text-sm text-gray-600">2024-07-31 09:30:15</span>
+                            </div>
+                            <button class="text-blue-600 hover:text-blue-800 text-sm">查看详情</button>
+                        </div>
+                        <p class="text-sm text-gray-800">AI分析识别出库存充足但销量下降趋势，建议增加广告投放...</p>
+                    </div>
+                    
+                    <div class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">已完成</span>
+                                <span class="text-sm text-gray-600">2024-07-30 14:22:41</span>
+                            </div>
+                            <button class="text-blue-600 hover:text-blue-800 text-sm">查看详情</button>
+                        </div>
+                        <p class="text-sm text-gray-800">库存周转正常，建议保持当前运营策略并关注竞品动态...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let analysisData = '';
+        
+        // 模拟分析事件数据
+        const simulatedEvents = [
+            {
+                type: 'thinking',
+                step: '数据概览和初印象',
+                content: '我正在查看这个产品的整体数据状况。总库存2850件，日均销售额$1250，销量45件/天。初步看来这是一个销售表现不错的产品，但需要深入分析各项指标的健康度...',
+                timestamp: Date.now()
+            },
+            {
+                type: 'analysis',
+                step: '库存健康度分析',
+                content: '**库存状况**: 库存周转天数63天，处于合理范围内（40-90天）。FBA可用库存1240件，按当前销量可维持约27天，需要关注补货时机。在途库存800件预计15天内到达，本地仓810件可作为应急备货。\n\n总体库存分布较为均衡，没有明显的断货风险。',
+                timestamp: Date.now() + 2000
+            },
+            {
+                type: 'thinking',
+                step: '销售表现评估思路',
+                content: '现在我需要分析销售数据的趋势。日均销售额$1250相当不错，但平均销量出现了-2.1%的下降，这是一个需要关注的信号。让我深入分析这个趋势背后的原因...',
+                timestamp: Date.now() + 4000
+            },
+            {
+                type: 'analysis',
+                step: '销售数据深度分析',
+                content: '**销售表现分析**: \n- 日均销售额$1250，增长+8.7%，表现优秀\n- 平均销量45件/天，下降-2.1%，需要关注\n- 客单价约$27.8，有所提升\n\n**关键发现**: 销售额增长而销量下降，说明产品客单价提升了，这可能是价格调整的结果。需要评估价格策略是否合理。',
+                timestamp: Date.now() + 6000
+            },
+            {
+                type: 'thinking',
+                step: '广告效果评估思路',
+                content: '虽然这个演示没有详细的广告数据，但根据销量下降的趋势，我需要考虑是否需要增加广告投放来保持市场份额。让我制定相应的广告策略建议...',
+                timestamp: Date.now() + 8000
+            },
+            {
+                type: 'analysis',
+                step: '广告效果分析',
+                content: '**广告策略建议**: \n基于销量下降-2.1%的趋势，建议：\n- 适度增加广告预算15-20%\n- 重点投放转化率较高的关键词\n- 测试新的广告创意以提升点击率\n- 监控ACOS控制在15%以内\n\n目标是在保持利润率的前提下，恢复销量增长。',
+                timestamp: Date.now() + 10000
+            },
+            {
+                type: 'thinking',
+                step: '综合诊断思路',
+                content: '综合所有数据分析，这个产品整体运营健康，但存在销量下降的隐患。主要矛盾在于如何平衡价格策略和市场份额。我需要给出具体的行动建议...',
+                timestamp: Date.now() + 12000
+            },
+            {
+                type: 'recommendation',
+                step: '具体行动建议',
+                content: '## 行动建议\n\n1. **短期策略（1-2周内）**\n   - 增加广告预算20%，重点投放高转化关键词\n   - 创建10-15%的限时Coupon促销，刺激销量恢复\n   - 监控竞品价格变化，及时调整定价策略\n\n2. **中期策略（1-2个月内）**\n   - 优化产品Listing，突出价值主张\n   - 测试A+页面内容，提升转化率\n   - 考虑bundle策略，提升客单价\n\n3. **长期策略（3个月以上）**\n   - 评估产品线扩展机会\n   - 建立品牌护城河，减少价格竞争\n   - 持续优化供应链，控制成本\n\n**优先级**: 库存管理健康，重点关注销量恢复和市场份额维护。',
+                timestamp: Date.now() + 14000
+            }
+        ];
+
+        let currentEventIndex = 0;
+        let analysisInterval;
+
+        function startAnalysis() {
+            // 隐藏空状态，显示进度条
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('progressSection').classList.remove('hidden');
+            document.getElementById('streamingEvents').classList.remove('hidden');
+            document.getElementById('startAnalysis').classList.add('hidden');
+            
+            // 重置状态
+            currentEventIndex = 0;
+            document.getElementById('streamingEvents').innerHTML = '';
+            
+            // 开始模拟流式分析
+            let progress = 0;
+            const progressBar = document.getElementById('progressBar');
+            const progressPercent = document.getElementById('progressPercent');
+            
+            // 进度条动画
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 90) progress = 90;
+                progressBar.style.width = progress + '%';
+                progressPercent.textContent = Math.round(progress);
+            }, 500);
+            
+            // 模拟分析事件
+            analysisInterval = setInterval(() => {
+                if (currentEventIndex < simulatedEvents.length) {
+                    addAnalysisEvent(simulatedEvents[currentEventIndex]);
+                    currentEventIndex++;
+                } else {
+                    // 分析完成
+                    clearInterval(analysisInterval);
+                    clearInterval(progressInterval);
+                    progressBar.style.width = '100%';
+                    progressPercent.textContent = '100';
+                    
+                    setTimeout(() => {
+                        completeAnalysis();
+                    }, 1000);
+                }
+            }, 2000);
+        }
+
+        function addAnalysisEvent(event) {
+            const eventsContainer = document.getElementById('streamingEvents');
+            const eventElement = document.createElement('div');
+            
+            const styleClass = {
+                'thinking': 'bg-purple-50 border-purple-200 text-purple-800',
+                'analysis': 'bg-blue-50 border-blue-200 text-blue-800',
+                'recommendation': 'bg-green-50 border-green-200 text-green-800'
+            }[event.type] || 'bg-gray-50 border-gray-200 text-gray-800';
+            
+            const icon = {
+                'thinking': '🧠',
+                'analysis': '👁️',
+                'recommendation': '🎯'
+            }[event.type] || '💡';
+            
+            eventElement.className = `p-3 rounded-lg border-l-4 transition-all duration-200 ${styleClass}`;
+            eventElement.innerHTML = `
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-2">
+                        <span class="text-lg">${icon}</span>
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-white bg-opacity-50">
+                            ${event.step}
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-1 text-xs text-gray-500">
+                        <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        ${new Date(event.timestamp).toLocaleTimeString()}
+                    </div>
+                </div>
+                <div class="text-sm leading-relaxed whitespace-pre-wrap streaming-cursor">
+                    ${event.content}
+                </div>
+            `;
+            
+            eventsContainer.appendChild(eventElement);
+            
+            // 滚动到最新事件
+            eventElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            
+            // 模拟打字效果
+            const contentDiv = eventElement.querySelector('.streaming-cursor');
+            const originalContent = event.content;
+            contentDiv.textContent = '';
+            
+            let charIndex = 0;
+            const typingInterval = setInterval(() => {
+                if (charIndex < originalContent.length) {
+                    contentDiv.textContent += originalContent[charIndex];
+                    charIndex++;
+                } else {
+                    clearInterval(typingInterval);
+                    contentDiv.classList.remove('streaming-cursor');
+                    contentDiv.innerHTML = originalContent.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                }
+            }, 20);
+            
+            // 收集完整内容用于最终展示
+            analysisData += `${event.step}: ${event.content}\n\n`;
+        }
+
+        function completeAnalysis() {
+            document.getElementById('progressSection').classList.add('hidden');
+            document.getElementById('finalResult').classList.remove('hidden');
+            
+            // 显示最终分析结果
+            const finalContent = document.getElementById('finalAnalysisContent');
+            finalContent.innerHTML = `
+                <div class="whitespace-pre-wrap text-sm leading-relaxed">
+                    <h3 class="text-lg font-semibold mb-3 text-green-800">🎯 AI分析完成</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-medium text-gray-900 mb-2">📊 核心发现</h4>
+                            <p class="text-gray-700">该产品整体运营健康，库存周转正常，但销量出现下降趋势需要重点关注。</p>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-900 mb-2">💡 主要建议</h4>
+                            <ul class="list-disc list-inside text-gray-700 space-y-1">
+                                <li>增加广告预算20%，重点投放高转化关键词</li>
+                                <li>创建10-15%限时Coupon促销，刺激销量恢复</li>
+                                <li>优化产品Listing，提升转化率</li>
+                                <li>持续监控竞品价格变化</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-900 mb-2">⚡ 优先级</h4>
+                            <p class="text-gray-700">高优先级：广告投放优化；中优先级：促销活动；低优先级：长期战略规划</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 重新显示开始按钮，但改为"重新分析"
+            const startButton = document.getElementById('startAnalysis');
+            startButton.innerHTML = `
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                重新分析
+            `;
+            startButton.classList.remove('hidden');
+        }
+
+        function copyAnalysis() {
+            const textToCopy = analysisData || '分析结果已生成，请查看上方内容。';
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                // 简单的成功提示
+                const button = event.target.closest('button');
+                const originalText = button.innerHTML;
+                button.innerHTML = `
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    已复制
+                `;
+                button.classList.add('bg-green-50', 'text-green-600');
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.classList.remove('bg-green-50', 'text-green-600');
+                }, 2000);
+            }).catch(() => {
+                alert('复制失败，请手动选择内容复制');
+            });
+        }
+
+        function resetAnalysis() {
+            // 清理状态
+            if (analysisInterval) clearInterval(analysisInterval);
+            analysisData = '';
+            currentEventIndex = 0;
+            
+            // 重置UI
+            document.getElementById('emptyState').classList.remove('hidden');
+            document.getElementById('progressSection').classList.add('hidden');
+            document.getElementById('streamingEvents').classList.add('hidden');
+            document.getElementById('finalResult').classList.add('hidden');
+            document.getElementById('streamingEvents').innerHTML = '';
+            
+            // 重置按钮
+            const startButton = document.getElementById('startAnalysis');
+            startButton.innerHTML = `
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                </svg>
+                开始AI分析
+            `;
+            startButton.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
