@@ -1,5 +1,5 @@
 
-> amazon-analyst@2.5.1 dev /home/hudi_data/total_project
+> amazon-analyst@2.5.1 dev
 > cross-env NODE_NO_WARNINGS=1 next dev --turbopack
 
    ▲ Next.js 15.2.3 (Turbopack)
@@ -13,91 +13,332 @@
  ⚠ Invalid next.config.mjs options detected: 
  ⚠     Unrecognized key(s) in object: 'turbopack'
  ⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
- ✓ Compiled in 673ms
- ✓ Ready in 2.1s
+ ✓ Compiled in 521ms
+ ✓ Ready in 1762ms
+ ○ Compiling /api/ai-analysis ...
+ ✓ Compiled /api/ai-analysis in 2.6s
+Query analysis tasks error: Error: Failed query: select count(*) from `ai_analysis_tasks`
+params: 
+    at async AIAnalysisModel.queryTasks (src/models/ai-analysis.ts:202:26)
+    at async GET (src/app/api/ai-analysis/route.ts:27:19)
+  200 |
+  201 |     // 查询总数
+> 202 |     const [countResult] = await db()
+      |                          ^
+  203 |       .select({ count: count() })
+  204 |       .from(aiAnalysisTasks)
+  205 |       .where(whereClause); {
+  query: 'select count(*) from `ai_analysis_tasks`',
+  params: [],
+  [cause]: [Error: Table 'saihu_erp_sync.ai_analysis_tasks' doesn't exist] {
+    code: 'ER_NO_SUCH_TABLE',
+    errno: 1146,
+    sql: 'select count(*) from `ai_analysis_tasks`',
+    sqlState: '42S02',
+    sqlMessage: "Table 'saihu_erp_sync.ai_analysis_tasks' doesn't exist"
+  }
+}
+ GET /api/ai-analysis 500 in 3303ms
+Query analysis tasks error: Error: Failed query: select `id`, `task_number`, `asin`, `warehouse_location`, `status`, `executor`, `batch_id`, `product_data`, `analysis_content`, `ai_model`, `processing_time`, `tokens_used`, `rating`, `rating_feedback`, `created_at`, `completed_at`, `updated_at` from `ai_analysis_tasks` order by `ai_analysis_tasks`.`created_at` desc limit ?
+params: 20
+    at async AIAnalysisModel.queryTasks (src/models/ai-analysis.ts:210:18)
+    at async GET (src/app/api/ai-analysis/route.ts:27:19)
+  208 |
+  209 |     // 查询数据
+> 210 |     const tasks = await db()
+      |                  ^
+  211 |       .select()
+  212 |       .from(aiAnalysisTasks)
+  213 |       .where(whereClause) {
+  query: 'select `id`, `task_number`, `asin`, `warehouse_location`, `status`, `executor`, `batch_id`, `product_data`, `analysis_content`, `ai_model`, `processing_time`, `tokens_used`, `rating`, `rating_feedback`, `created_at`, `completed_at`, `updated_at` from `ai_analysis_tasks` order by `ai_analysis_tasks`.`created_at` desc limit ?',
+  params: [Array],
+  [cause]: [Error: Unknown column 'batch_id' in 'field list'] {
+    code: 'ER_BAD_FIELD_ERROR',
+    errno: 1054,
+    sql: 'select `id`, `task_number`, `asin`, `warehouse_location`, `status`, `executor`, `batch_id`, `product_data`, `analysis_content`, `ai_model`, `processing_time`, `tokens_used`, `rating`, `rating_feedback`, `created_at`, `completed_at`, `updated_at` from `ai_analysis_tasks` order by `ai_analysis_tasks`.`created_at` desc limit 20',
+    sqlState: '42S22',
+    sqlMessage: "Unknown column 'batch_id' in 'field list'"
+  }
+}
+ GET /api/ai-analysis 500 in 185ms
  ○ Compiling /[locale] ...
- ✓ Compiled /[locale] in 10s
- HEAD / 200 in 12139ms
- GET / 200 in 367ms
+ ✓ Compiled /[locale] in 9.1s
+ GET / 200 in 11254ms
+ GET / 200 in 330ms
+ GET /api/ai-analysis 200 in 41ms
+ ○ Compiling /api/ai-analysis/generate ...
+ ✓ Compiled /api/ai-analysis/generate in 3s
+ POST /api/ai-analysis/generate 200 in 3274ms
+Failed to update task status: Error: Failed query: update `ai_analysis_tasks` set `status` = ?, `updated_at` = ? where `ai_analysis_tasks`.`id` = ?
+params: processing,2025-08-01T03:52:34.233Z,1
+    at async AIAnalysisModel.updateTaskStatus (src/models/ai-analysis.ts:126:6)
+    at async processAnalysisAsync (src/app/api/ai-analysis/generate/route.ts:132:4)
+  124 |
+  125 |     try {
+> 126 |       await db()
+      |      ^
+  127 |         .update(aiAnalysisTasks)
+  128 |         .set(updateData)
+  129 |         .where(eq(aiAnalysisTasks.id, id)); {
+  query: 'update `ai_analysis_tasks` set `status` = ?, `updated_at` = ? where `ai_analysis_tasks`.`id` = ?',
+  params: [Array],
+  [cause]: [Error: Incorrect datetime value: '2025-08-01T03:52:34.233Z' for column 'updated_at' at row 1] {
+    code: 'ER_TRUNCATED_WRONG_VALUE',
+    errno: 1292,
+    sql: "update `ai_analysis_tasks` set `status` = 'processing', `updated_at` = '2025-08-01T03:52:34.233Z' where `ai_analysis_tasks`.`id` = 1",
+    sqlState: '22007',
+    sqlMessage: "Incorrect datetime value: '2025-08-01T03:52:34.233Z' for column 'updated_at' at row 1"
+  }
+}
+Task 1: Helios Agent failed, falling back to DeepSeek: Error: inventoryAnalysis is already being used as a state attribute (a.k.a. a channel), cannot also be used as a node name.
+    at StateGraph.addNode (../../src/graph/state.ts:481:14)
+    at HeliosAgent.buildGraph (src/app/api/ai-analysis/agents/helios-agent.ts:94:7)
+    at new HeliosAgent (src/app/api/ai-analysis/agents/helios-agent.ts:82:22)
+    at getHeliosAgent (src/app/api/ai-analysis/agents/helios-agent.ts:683:18)
+    at processAnalysisAsync (src/app/api/ai-analysis/generate/route.ts:143:39)
+  92 |       
+  93 |       // 并行分析节点
+> 94 |       .addNode("inventoryAnalysis", this.inventoryAnalysisNode.bind(this))
+     |       ^
+  95 |       .addNode("adPerformanceAnalysis", this.adPerformanceAnalysisNode.bind(this))
+  96 |       .addNode("salesAnalysis", this.salesAnalysisNode.bind(this))
+  97 |       
+ GET / 200 in 352ms
  ○ Compiling /[locale]/inventory ...
- ✓ Compiled /[locale]/inventory in 6.3s
- GET /api/auth/session 200 in 5713ms
- GET /inventory 200 in 7715ms
- GET /api/auth/session 200 in 81ms
- GET /api/auth/session 200 in 74ms
- GET /api/auth/session 200 in 84ms
- GET /api/auth/session 200 in 81ms
- ○ Compiling /api/inventory/stats ...
- GET /api/auth/session 200 in 90ms
- ✓ Compiled /api/inventory/stats in 959ms
+ ✓ Compiled /[locale]/inventory in 3.9s
+ GET /inventory 200 in 4775ms
+Failed to update task status: Error: Failed query: update `ai_analysis_tasks` set `status` = ?, `analysis_content` = ?, `processing_time` = ?, `tokens_used` = ?, `completed_at` = ?, `updated_at` = ? where `ai_analysis_tasks`.`id` = ?
+params: completed,## 分析：
+1. **库存健康度**: 库存严重过剩。总库存2495件，基于日均11.8的销量，库存周转天数高达211天，远超90天的健康阈值，存在长期仓储费风险和资金积压问题。库存状态明确显示"周转超标"，需优先解决。
+
+2. **广告绩效**: 广告效率处于临界状态，需针对性优化。
+   - **转化率**: 客单价约$8.96（$105.73/11.8），广告转化率14.8%（40/270）低于该价位18%的基准，但未触发强制规则（12.6%阈值）。转化率不足是限制广告效益的主因。
+   - **成本效益**: 15.12%的ACOS处于合理区间（7%-15%）上限，但广告订单仅占日均销量的28.6%（40/140），存在优化空间。
+   - **点击率**: 0.54%的CTR高于0.5%基准，主图吸引力尚可，问题集中在转化环节。
+
+3. **综合诊断**: 核心矛盾是转化率不足导致的库存周转效率低下。需通过价格杠杆和Listing优化提升转化，同步控制广告成本。
+
+## 行动：
+1. **价格促销**: 立即创建15% Coupon（无需审批），持续监测3天转化率变化。若转化率未提升至18%，考虑追加7天限时折扣（PD）。
+
+2. **广告调整**: 
+   - 保持现有广告结构（ACOS未超标）
+   - 将ACOS>15%的广告组BID降低10%
+   - 转化率达标的关键词组BID提升10%
+
+3. **库存管理**: 
+   - 暂停所有补货计划
+   - 申报最近可用BD档期（需确保BD期间日均销量≥50件）
+   - 若BD获批，提前将Coupon调整为20%（需审批）
+
+4. **Listing优化**: 
+   - 重点优化首图（增加使用场景）和标题（补充核心关键词）
+   - 检查QA板块，补充3条以上产品痛点问答
+   - 更新EBC内容，增加对比类图表
+
+（注：所有操作需在24小时内执行完毕，72小时后进行效果复盘）,23850,2632,2025-08-01T03:52:58.224Z,2025-08-01T03:52:58.224Z,1
+    at async AIAnalysisModel.updateTaskStatus (src/models/ai-analysis.ts:126:6)
+    at async processAnalysisAsync (src/app/api/ai-analysis/generate/route.ts:181:4)
+  124 |
+  125 |     try {
+> 126 |       await db()
+      |      ^
+  127 |         .update(aiAnalysisTasks)
+  128 |         .set(updateData)
+  129 |         .where(eq(aiAnalysisTasks.id, id)); {
+  query: 'update `ai_analysis_tasks` set `status` = ?, `analysis_content` = ?, `processing_time` = ?, `tokens_used` = ?, `completed_at` = ?, `updated_at` = ? where `ai_analysis_tasks`.`id` = ?',
+  params: [Array],
+  [cause]: [Error: Incorrect datetime value: '2025-08-01T03:52:58.224Z' for column 'completed_at' at row 1] {
+    code: 'ER_TRUNCATED_WRONG_VALUE',
+    errno: 1292,
+    sql: 'update `ai_analysis_tasks` set `status` = \'completed\', `analysis_content` = \'## 分析：\\n1. **库存健康度**: 库存严重过剩。总库存2495件，基于日均11.8的销量，库存周转天数高达211天，远超90天的健康阈值，存在长期仓储费风险和资金积压问题。库存状态明确显示\\"周转超标\\"，需优先解决。\\n\\n2. **广告绩效**: 广告效率处于临界状态，需针对性优化。\\n   - **转化率**: 客单价约$8.96（$105.73/11.8），广告转化率14.8%（40/270）低于该价位18%的基准，但未触发强制规则（12.6%阈值）。转化率不足是限制广告效益的主因。\\n   - **成本效益**: 15.12%的ACOS处于合理区间（7%-15%）上限，但广告订单仅占日均销量的28.6%（40/140），存在优化空间。\\n   - **点击率**: 0.54%的CTR高于0.5%基准，主图吸引力尚可，问题集中在转化环节。\\n\\n3. **综合诊断**: 核心矛盾是转化率不足导致的库存周转效率低下。需通过价格杠杆和Listing优化提升转化，同步控制广告成本。\\n\\n## 行动：\\n1. **价格促销**: 立即创建15% Coupon（无需审批），持续监测3天转化率变化。若转化率未提升至18%，考虑追加7天限时折扣（PD）。\\n\\n2. **广告调整**: \\n   - 保持现有广告结构（ACOS未超标）\\n   - 将ACOS>15%的广告组BID降低10%\\n   - 转化率达标的关键词组BID提升10%\\n\\n3. **库存管理**: \\n   - 暂停所有补货计划\\n   - 申报最近可用BD档期（需确保BD期间日均销量≥50件）\\n   - 若BD获批，提前将Coupon调整为20%（需审批）\\n\\n4. **Listing优化**: \\n   - 重点优化首图（增加使用场景）和标题（补充核心关键词）\\n   - 检查QA板块，补充3条以上产品痛点问答\\n   - 更新EBC内容，增加对比类图表\\n\\n（注：所有操作需在24小时内执行完毕，72小时后进行效果复盘）\', `processing_time` = 23850, `tokens_used` = 2632, `completed_at` = \'2025-08-01T03:52:58.224Z\', `updated_at` = \'2025-08-01T03:52:58.224Z\' where `ai_analysis_tasks`.`id` = 1',
+    sqlState: '22007',
+    sqlMessage: "Incorrect datetime value: '2025-08-01T03:52:58.224Z' for column 'completed_at' at row 1"
+  }
+}
+Analysis task 1 completed successfully using deepseek_fallback
+ ○ Compiling /api/ai-analysis/[id] ...
+ ✓ Compiled /api/ai-analysis/[id] in 898ms
+Failed to parse product data: SyntaxError: "[object Object]" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at GET (src/app/api/ai-analysis/[id]/route.ts:38:25)
+  36 |     let productData = null;
+  37 |     try {
+> 38 |       productData = JSON.parse(task.product_data);
+     |                         ^
+  39 |     } catch (error) {
+  40 |       console.error('Failed to parse product data:', error);
+  41 |     }
+ GET /api/ai-analysis/1 200 in 1904ms
+ ○ Compiling /api/auth/[...nextauth] ...
 Ignoring invalid configuration option passed to Connection: acquireTimeout. This is currently a warning, but in future versions of MySQL2, an error will be thrown if you pass an invalid configuration option to a Connection
 Ignoring invalid configuration option passed to Connection: timeout. This is currently a warning, but in future versions of MySQL2, an error will be thrown if you pass an invalid configuration option to a Connection
 Ignoring invalid configuration option passed to Connection: reconnect. This is currently a warning, but in future versions of MySQL2, an error will be thrown if you pass an invalid configuration option to a Connection
 MySQL连接池初始化成功
- GET /api/inventory/stats 200 in 1134ms
- GET /api/auth/session 200 in 173ms
- ○ Compiling /api/inventory/sales-persons ...
- GET /api/inventory/sales-persons 200 in 1738ms
- ✓ Compiled /api/inventory/sales-persons in 1740ms
- GET /api/inventory?page=1&limit=20&latest_only=true 200 in 1779ms
- GET /api/inventory/warehouse-locations 200 in 1817ms
- GET /api/inventory?page=1&limit=20&latest_only=true 200 in 31ms
- GET /api/inventory?page=1&limit=20&latest_only=true&sales_person=%E7%BD%97%E7%A2%A7%E7%90%B4 200 in 36ms
- GET /api/inventory?page=1&limit=20&latest_only=true&sales_person=%E7%BD%97%E7%A2%A7%E7%90%B4&warehouse_location=%E5%85%B6%E4%BB%96 200 in 59ms
- GET /api/inventory?page=1&limit=20&latest_only=true&sales_person=%E7%BD%97%E7%A2%A7%E7%90%B4&warehouse_location=%E6%AC%A7%E7%9B%9F 200 in 47ms
- GET /api/inventory?page=1&limit=20&latest_only=true&warehouse_location=%E6%AC%A7%E7%9B%9F 200 in 51ms
- ✓ Compiled in 554ms
- GET /api/inventory/sales-persons 200 in 138ms
- GET /api/inventory/warehouse-locations 200 in 147ms
- GET /api/inventory?page=1&limit=20&latest_only=true 200 in 156ms
- GET /api/inventory?page=1&limit=20&latest_only=true 200 in 86ms
- ✓ Compiled in 537ms
- GET /api/inventory/sales-persons 200 in 120ms
- GET /api/inventory?page=1&limit=20&latest_only=true 200 in 135ms
- GET /api/inventory/warehouse-locations 200 in 138ms
- GET /api/inventory?page=1&limit=20&latest_only=true 200 in 48ms
- ✓ Compiled in 535ms
- GET /api/inventory/sales-persons 200 in 102ms
- GET /api/inventory/warehouse-locations 200 in 107ms
- GET /api/inventory?page=1&limit=20&latest_only=true 200 in 112ms
- GET /api/inventory?page=1&limit=20&latest_only=true 200 in 39ms
- HEAD /inventory 200 in 1395ms
- GET / 200 in 388ms
- GET /inventory 200 in 314ms
- GET /api/auth/session 200 in 122ms
- GET /api/inventory/stats 200 in 124ms
- GET /api/auth/session 200 in 128ms
- GET /api/inventory/sales-persons 200 in 135ms
-Ignoring invalid configuration option passed to Connection: acquireTimeout. This is currently a warning, but in future versions of MySQL2, an error will be thrown if you pass an invalid configuration option to a Connection
-Ignoring invalid configuration option passed to Connection: timeout. This is currently a warning, but in future versions of MySQL2, an error will be thrown if you pass an invalid configuration option to a Connection
-Ignoring invalid configuration option passed to Connection: reconnect. This is currently a warning, but in future versions of MySQL2, an error will be thrown if you pass an invalid configuration option to a Connection
-MySQL连接池初始化成功
- GET /api/inventory/warehouse-locations 200 in 339ms
- GET /api/inventory?page=1&limit=20&latest_only=true 200 in 359ms
- GET /api/auth/session 200 in 102ms
- GET /api/inventory?page=1&limit=20&latest_only=true 200 in 68ms
- GET /api/auth/session 200 in 52ms
- GET /api/inventory?page=1&limit=20&date_from=2025-07-22 200 in 71ms
- GET /api/inventory?page=1&limit=20&date_from=2025-07-23 200 in 41ms
- GET /api/inventory?page=1&limit=20&date_from=2025-07-29 200 in 44ms
- GET /api/inventory?page=1&limit=20&date_from=2025-07-30 200 in 56ms
- GET /api/inventory?page=1&limit=20&date_from=2025-07-22 200 in 43ms
- GET /api/inventory?page=1&limit=20&date_from=2025-07-22&date_to=2025-07-30 200 in 48ms
- GET /api/inventory?page=1&limit=20&date_from=2025-07-22&date_to=2025-07-24 200 in 40ms
- GET /api/inventory?page=1&limit=20&date_from=2025-07-22&date_to=2025-07-25 200 in 42ms
- GET / 200 in 539ms
- GET /inventory 200 in 294ms
- GET /api/auth/session 200 in 103ms
- GET /api/inventory/stats 200 in 52ms
- GET /api/auth/session 200 in 53ms
- GET /api/inventory/warehouse-locations 200 in 93ms
- GET /api/inventory/sales-persons 200 in 107ms
- GET /api/inventory?page=1&limit=20&latest_only=true 200 in 116ms
- GET /api/inventory?page=1&limit=20&latest_only=true 200 in 47ms
- GET /api/inventory?page=1&limit=20&date_from=2025-07-22 200 in 52ms
- GET /api/inventory?page=1&limit=20&date_from=2025-07-22&date_to=2025-07-28 200 in 50ms
- ✓ Compiled in 742ms
- GET /inventory 200 in 733ms
- GET /inventory 200 in 184ms
- ✓ Compiled in 476ms
- ✓ Compiled in 559ms
+ GET /api/inventory/stats 200 in 1908ms
+ ✓ Compiled /api/auth/[...nextauth] in 2.2s
+ ○ Compiling /api/inventory ...
+ GET /api/auth/session 200 in 3456ms
+ GET /api/auth/session 200 in 238ms
+ GET /api/auth/session 200 in 56ms
+ GET /api/auth/session 200 in 61ms
+ GET /api/inventory/sales-persons 200 in 2249ms
+ GET /api/inventory/warehouse-locations 200 in 2296ms
+ ✓ Compiled /api/inventory in 2.3s
+ GET /api/inventory?page=1&limit=20&latest_only=true 200 in 2346ms
+ GET /api/auth/session 200 in 89ms
+ GET /api/inventory?page=1&limit=20&latest_only=true 200 in 49ms
+ ○ Compiling /[locale]/inventory/analysis/[asin] ...
+ ✓ Compiled /[locale]/inventory/analysis/[asin] in 4.1s
+ GET /api/inventory?asin=B0F93L1K59&warehouse_location=%E6%AC%A7%E7%9B%9F&latest_only=true&limit=1 200 in 55ms
+ GET /api/inventory?asin=B0F93L1K59&warehouse_location=%E6%AC%A7%E7%9B%9F&limit=30&sort_by=date&sort_order=desc 200 in 44ms
+ GET /inventory/analysis/B0F93L1K59?warehouse=%E6%AC%A7%E7%9B%9F 200 in 5140ms
+ GET /api/inventory?asin=B0F93L1K59&warehouse_location=%E6%AC%A7%E7%9B%9F&latest_only=true&limit=1 200 in 57ms
+ GET /api/inventory?asin=B0F93L1K59&warehouse_location=%E6%AC%A7%E7%9B%9F&limit=30&sort_by=date&sort_order=desc 200 in 48ms
+ GET /inventory/analysis/B0F93L1K59?warehouse=%E6%AC%A7%E7%9B%9F 200 in 328ms
+ GET /api/inventory?asin=B0F93L1K59&warehouse_location=%E6%AC%A7%E7%9B%9F&latest_only=true&limit=1 200 in 49ms
+ GET /api/inventory?asin=B0F93L1K59&warehouse_location=%E6%AC%A7%E7%9B%9F&limit=30&sort_by=date&sort_order=desc 200 in 53ms
+ GET /inventory/analysis/B0F93L1K59?warehouse=%E6%AC%A7%E7%9B%9F 200 in 264ms
+ ○ Compiling /api/ai-analysis/stream ...
+ ✓ Compiled /api/ai-analysis/stream in 1145ms
+Failed to update task status: Error: Failed query: update `ai_analysis_tasks` set `status` = ?, `updated_at` = ? where `ai_analysis_tasks`.`id` = ?
+params: processing,2025-08-01T03:58:09.004Z,2
+    at async AIAnalysisModel.updateTaskStatus (src/models/ai-analysis.ts:126:6)
+    at async Object.start (src/app/api/ai-analysis/stream/route.ts:109:10)
+  124 |
+  125 |     try {
+> 126 |       await db()
+      |      ^
+  127 |         .update(aiAnalysisTasks)
+  128 |         .set(updateData)
+  129 |         .where(eq(aiAnalysisTasks.id, id)); {
+  query: 'update `ai_analysis_tasks` set `status` = ?, `updated_at` = ? where `ai_analysis_tasks`.`id` = ?',
+  params: [Array],
+  [cause]: [Error: Incorrect datetime value: '2025-08-01T03:58:09.004Z' for column 'updated_at' at row 1] {
+    code: 'ER_TRUNCATED_WRONG_VALUE',
+    errno: 1292,
+    sql: "update `ai_analysis_tasks` set `status` = 'processing', `updated_at` = '2025-08-01T03:58:09.004Z' where `ai_analysis_tasks`.`id` = 2",
+    sqlState: '22007',
+    sqlMessage: "Incorrect datetime value: '2025-08-01T03:58:09.004Z' for column 'updated_at' at row 1"
+  }
+}
+Failed to update task status: Error: Failed query: update `ai_analysis_tasks` set `status` = ?, `analysis_content` = ?, `processing_time` = ?, `tokens_used` = ?, `completed_at` = ?, `updated_at` = ? where `ai_analysis_tasks`.`id` = ?
+params: completed,### 1. [THINKING] 数据概览和初印象
+- 产品名称显示这是一个女性发夹产品，属于时尚配饰类目，关键词包含"Duckbill Hair Clips"、"Flat Hair Claw Clip"等，定位中性哑光风格，面向厚发/卷发人群。
+- 库存总量553件全部在FBA，无在途或本地仓库存，但库存状态显示"周转超标"，周转天数高达176天（约6个月）。
+- 销售表现稳定但平庸：日均销量3.14件，销售额$37.99，所有趋势指标均为0%，说明近期没有增长或下滑。
+- 广告数据完全空白：无曝光、无点击、无花费，是一个明显的运营漏洞。
+- 第一印象：这是一个库存积压严重、缺乏营销推动的"僵尸型"Listing，需要立即采取行动激活销售。
+
+### 2. [ANALYSIS] 库存健康度分析
+- **库存周转天数176天**：远超健康水平（时尚品类理想周转应<90天），按当前销量计算553/3.14≈176天，存在长期仓储费风险。
+- **库存分布问题**：100%集中在FBA，缺乏本地仓缓冲，且无在途库存说明近期未补货，可能已停止主动管理。
+- **周转超标警告**：亚马逊算法已判定库存周转异常，可能影响IPI分数和仓储限额。
+- **潜在风险**：若保持现状，预计到2025年底仍有约300件库存积压（553-(3.14×180天)≈300）。
+
+### 3. [THINKING] 销售表现评估思路
+- 评估维度：
+  1. **绝对水平**：日均$37.99在发饰类目中的分位值（需类目数据参考）
+  2. **稳定性**：0%变化趋势反映缺乏增长动能
+  3. **转化率**：缺少会话数据无法计算，但可通过广告空白推断流量不足
+  4. **季节性**：7-8月是夏季发型需求高峰，当前表现未抓住旺季机会
+
+### 4. [ANALYSIS] 销售数据深度分析
+- **价格敏感度测试**：当前售价≈$12.1/件（$37.99÷3.14），检查：
+  - 是否高于竞品均价？（需市场调研）
+  - 4件装是否最优组合？可考虑拆分2件装降低门槛
+- **流量结构缺陷**：
+  - 自然流量：关键词排名可能靠后（无广告支撑）
+  - 付费流量：完全缺失
+  - 关联流量：无数据反映是否做关联促销
+- **内容优化机会**：
+  - 标题含"Neutral Matte"但未突出材质（树脂？金属？）
+  - 主图是否展示佩戴效果？A+页面是否利用？
+
+### 5. [THINKING] 广告效果评估思路
+- 核心问题：零广告投入导致：
+  1. 无法测试关键词转化效率
+  2. 错失新品期流量扶持
+  3. 缺乏数据优化Listing
+- 需优先建立基础广告架构：
+  - 自动广告：挖掘高相关关键词
+  - 手动精准：定位核心词如"Duckbill Hair Clips"
+  - 竞品定位：针对Best Seller ASIN
+
+### 6. [ANALYSIS] 广告效果分析
+- **现状危害**：
+  - 完全依赖自然流量，在竞争激烈的发饰类目难以突围
+  - 无法积累广告历史数据，导致算法不推荐
+  - 错过亚马逊广告权重积累周期
+- **机会点**：
+  - 竞品广告数据可参考（需第三方工具）
+  - 高潜力词如"matte hair clips for thick hair"可能被忽略
+
+### 7. [THINKING] 综合诊断思路
+- 核心矛盾：**高库存压力与零营销投入的失衡**
+- 根本原因：
+  1. 缺乏流量入口（广告+SEO）
+  2. 产品呈现可能不具竞争力（价格/内容）
+  3. 未利用多件组合的促销优势
+- 关键突破口：
+  - 立即启动广告获取销售数据
+  - 优化价格策略测试转化
+  - 清理库存同时提升排名
+
+### 8. [RECOMMENDATION] 具体行动建议
+**紧急行动（48小时内）**：
+1. **广告紧急启动**：
+   - 创建$20/天的自动广告（预算≈月销10%）
+   - 添加手动精准组：["duckbill clip for thick hair"], ["matte hair claw clip"]
+   - 设置10%的SBV广告定位竞品详情页
+
+2. **价格策略调整**：
+   - 暂时降价至$10.99/套（约10%折扣）测试销量弹性
+   - 设置7天LD（Lightning Deal）清库存
+   - 增加Coupon（15% off+首页展示）
+
+**中期优化（1-2周）**：
+3. **Listing升级**：
+   - 标题优化示例："Matte Duckbill Clips for Thick Hair 4 Pack - Non Slip Strong Hold Hair Claw for Women, Curly/Long Hair Accessories"
+   - 主图增加模特实拍+发量对比图
+   - A+页面添加使用场景对比图
+
+4. **库存管理**：
+   - 创建Remove Order移出200件至本地仓（降低FBA长期费）
+   - 设置自动清货规则（≥90天库存降价15%）
+
+**长期策略（1个月+）**：
+5. **流量矩阵搭建**：
+   - 启动DSP广告定位发型相关兴趣人群
+   - 联系红人做"夏季发型配件"主题推广
+   - 申报Outlets Deal进一步清仓
+
+6. **产品迭代**：
+   - 开发同系列新色（如莫兰迪色系）
+   - 测试单件装/多件装组合（如2pc+8pc）
+
+**监控指标**：
+- 每日跟踪：广告ACoS（目标<30%）、转化率（目标>15%）
+- 每周检查：库存周转天数变化、BSR排名提升
+- 每月评估：IPI分数恢复情况（目标>600）,72035,0,2025-08-01T03:59:21.020Z,2025-08-01T03:59:21.020Z,2
+    at async AIAnalysisModel.updateTaskStatus (src/models/ai-analysis.ts:126:6)
+    at async Object.start (src/app/api/ai-analysis/stream/route.ts:126:14)
+  124 |
+  125 |     try {
+> 126 |       await db()
+      |      ^
+  127 |         .update(aiAnalysisTasks)
+  128 |         .set(updateData)
+  129 |         .where(eq(aiAnalysisTasks.id, id)); {
+  query: 'update `ai_analysis_tasks` set `status` = ?, `analysis_content` = ?, `processing_time` = ?, `tokens_used` = ?, `completed_at` = ?, `updated_at` = ? where `ai_analysis_tasks`.`id` = ?',
+  params: [Array],
+  [cause]: [Error: Incorrect datetime value: '2025-08-01T03:59:21.020Z' for column 'completed_at' at row 1] {
+    code: 'ER_TRUNCATED_WRONG_VALUE',
+    errno: 1292,
+    sql: 'update `ai_analysis_tasks` set `status` = \'completed\', `analysis_content` = \'### 1. [THINKING] 数据概览和初印象\\n- 产品名称显示这是一个女性发夹产品，属于时尚配饰类目，关键词包含\\"Duckbill Hair Clips\\"、\\"Flat Hair Claw Clip\\"等，定位中性哑光风格，面向厚发/卷发人群。\\n- 库存总量553件全部在FBA，无在途或本地仓库存，但库存状态显示\\"周转超标\\"，周转天数高达176天（约6个月）。\\n- 销售表现稳定但平庸：日均销量3.14件，销售额$37.99，所有趋势指标均为0%，说明近期没有增长或下滑。\\n- 广告数据完全空白：无曝光、无点击、无花费，是一个明显的运营漏洞。\\n- 第一印象：这是一个库存积压严重、缺乏营销推动的\\"僵尸型\\"Listing，需要立即采取行动激活销售。\\n\\n### 2. [ANALYSIS] 库存健康度分析\\n- **库存周转天数176天**：远超健康水平（时尚品类理想周转应<90天），按当前销量计算553/3.14≈176天，存在长期仓储费风险。\\n- **库存分布问题**：100%集中在FBA，缺乏本地仓缓冲，且无在途库存说明近期未补货，可能已停止主动管理。\\n- **周转超标警告**：亚马逊算法已判定库存周转异常，可能影响IPI分数和仓储限额。\\n- **潜在风险**：若保持现状，预计到2025年底仍有约300件库存积压（553-(3.14×180天)≈300）。\\n\\n### 3. [THINKING] 销售表现评估思路\\n- 评估维度：\\n  1. **绝对水平**：日均$37.99在发饰类目中的分位值（需类目数据参考）\\n  2. **稳定性**：0%变化趋势反映缺乏增长动能\\n  3. **转化率**：缺少会话数据无法计算，但可通过广告空白推断流量不足\\n  4. **季节性**：7-8月是夏季发型需求高峰，当前表现未抓住旺季机会\\n\\n### 4. [ANALYSIS] 销售数据深度分析\\n- **价格敏感度测试**：当前售价≈$12.1/件（$37.99÷3.14），检查：\\n  - 是否高于竞品均价？（需市场调研）\\n  - 4件装是否最优组合？可考虑拆分2件装降低门槛\\n- **流量结构缺陷**：\\n  - 自然流量：关键词排名可能靠后（无广告支撑）\\n  - 付费流量：完全缺失\\n  - 关联流量：无数据反映是否做关联促销\\n- **内容优化机会**：\\n  - 标题含\\"Neutral Matte\\"但未突出材质（树脂？金属？）\\n  - 主图是否展示佩戴效果？A+页面是否利用？\\n\\n### 5. [THINKING] 广告效果评估思路\\n- 核心问题：零广告投入导致：\\n  1. 无法测试关键词转化效率\\n  2. 错失新品期流量扶持\\n  3. 缺乏数据优化Listing\\n- 需优先建立基础广告架构：\\n  - 自动广告：挖掘高相关关键词\\n  - 手动精准：定位核心词如\\"Duckbill Hair Clips\\"\\n  - 竞品定位：针对Best Seller ASIN\\n\\n### 6. [ANALYSIS] 广告效果分析\\n- **现状危害**：\\n  - 完全依赖自然流量，在竞争激烈的发饰类目难以突围\\n  - 无法积累广告历史数据，导致算法不推荐\\n  - 错过亚马逊广告权重积累周期\\n- **机会点**：\\n  - 竞品广告数据可参考（需第三方工具）\\n  - 高潜力词如\\"matte hair clips for thick hair\\"可能被忽略\\n\\n### 7. [THINKING] 综合诊断思路\\n- 核心矛盾：**高库存压力与零营销投入的失衡**\\n- 根本原因：\\n  1. 缺乏流量入口（广告+SEO）\\n  2. 产品呈现可能不具竞争力（价格/内容）\\n  3. 未利用多件组合的促销优势\\n- 关键突破口：\\n  - 立即启动广告获取销售数据\\n  - 优化价格策略测试转化\\n  - 清理库存同时提升排名\\n\\n### 8. [RECOMMENDATION] 具体行动建议\\n**紧急行动（48小时内）**：\\n1. **广告紧急启动**：\\n   - 创建$20/天的自动广告（预算≈月销10%）\\n   - 添加手动精准组：[\\"duckbill clip for thick hair\\"], [\\"matte hair claw clip\\"]\\n   - 设置10%的SBV广告定位竞品详情页\\n\\n2. **价格策略调整**：\\n   - 暂时降价至$10.99/套（约10%折扣）测试销量弹性\\n   - 设置7天LD（Lightning Deal）清库存\\n   - 增加Coupon（15% off+首页展示）\\n\\n**中期优化（1-2周）**：\\n3. **Listing升级**：\\n   - 标题优化示例：\\"Matte Duckbill Clips for Thick Hair 4 Pack - Non Slip Strong Hold Hair Claw for Women, Curly/Long Hair Accessories\\"\\n   - 主图增加模特实拍+发量对比图\\n   - A+页面添加使用场景对比图\\n\\n4. **库存管理**：\\n   - 创建Remove Order移出200件至本地仓（降低FBA长期费）\\n   - 设置自动清货规则（≥90天库存降价15%）\\n\\n**长期策略（1个月+）**：\\n5. **流量矩阵搭建**：\\n   - 启动DSP广告定位发型相关兴趣人群\\n   - 联系红人做\\"夏季发型配件\\"主题推广\\n   - 申报Outlets Deal进一步清仓\\n\\n6. **产品迭代**：\\n   - 开发同系列新色（如莫兰迪色系）\\n   - 测试单件装/多件装组合（如2pc+8pc）\\n\\n**监控指标**：\\n- 每日跟踪：广告ACoS（目标<30%）、转化率（目标>15%）\\n- 每周检查：库存周转天数变化、BSR排名提升\\n- 每月评估：IPI分数恢复情况（目标>600）\', `processing_time` = 72035, `tokens_used` = 0, `completed_at` = \'2025-08-01T03:59:21.020Z\', `updated_at` = \'2025-08-01T03:59:21.020Z\' where `ai_analysis_tasks`.`id` = 2',
+    sqlState: '22007',
+    sqlMessage: "Incorrect datetime value: '2025-08-01T03:59:21.020Z' for column 'completed_at' at row 1"
+  }
+}
+ POST /api/ai-analysis/stream 200 in 73259ms
+ POST /api/ai-analysis/streaming-rating 405 in 98ms
